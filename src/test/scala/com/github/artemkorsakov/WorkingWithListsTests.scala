@@ -137,11 +137,82 @@ class WorkingWithListsTests extends AnyFlatSpec {
     )
   }
 
-  "P11 (*)" should "" in {}
+  "P11 (*)" should "modified run-length encoding." in {
+    encodeModified(
+      List(
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("c"),
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("e"),
+        Symbol("e"),
+        Symbol("e")
+      )
+    ) shouldBe List(
+      (4, Symbol("a")),
+      Symbol("b"),
+      (2, Symbol("c")),
+      (2, Symbol("a")),
+      Symbol("d"),
+      (4, Symbol("e"))
+    )
+  }
 
-  "P12 (*)" should "" in {}
+  "P12 (*)" should "decode a run-length encoded list." in {
+    decode(
+      List((4, Symbol("a")), (1, Symbol("b")), (2, Symbol("c")), (2, Symbol("a")), (1, Symbol("d")), (4, Symbol("e")))
+    ) shouldBe List(
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("b"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("d"),
+      Symbol("e"),
+      Symbol("e"),
+      Symbol("e"),
+      Symbol("e")
+    )
+  }
 
-  "P13 (*)" should "" in {}
+  "P13 (*)" should "run-length encoding of a list (direct solution)." in {
+    encodeDirect(
+      List(
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("c"),
+        Symbol("a"),
+        Symbol("a"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("e"),
+        Symbol("e"),
+        Symbol("e")
+      )
+    ) shouldBe List(
+      (4, Symbol("a")),
+      (1, Symbol("b")),
+      (2, Symbol("c")),
+      (2, Symbol("a")),
+      (1, Symbol("d")),
+      (4, Symbol("e"))
+    )
+  }
 
   "P14 (*)" should "" in {}
 
@@ -160,5 +231,17 @@ class WorkingWithListsTests extends AnyFlatSpec {
   "P21 (*)" should "" in {}
 
   "P22 (*)" should "" in {}
+
+  "P23 (*)" should "" in {}
+
+  "P24 (*)" should "" in {}
+
+  "P25 (*)" should "" in {}
+
+  "P26 (*)" should "" in {}
+
+  "P27 (*)" should "" in {}
+
+  "P28 (*)" should "" in {}
 
 }

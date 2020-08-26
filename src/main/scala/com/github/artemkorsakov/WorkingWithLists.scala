@@ -73,4 +73,14 @@ object WorkingWithLists {
     }
   }
 
+  def encodeModified(ls: List[Any]): List[Any] = encode(ls).map(t => if (t._1 == 1) t._2 else t)
+
+  def decode[T](ls: List[(Int, T)]): List[T] = ls.flatMap(t => List.fill(t._1)(t._2))
+
+  def encodeDirect[A](ls: List[A]): List[(Int, A)] =
+    if (ls.isEmpty) Nil
+    else {
+      val (packed, next) = ls span { _ == ls.head }
+      (packed.length, packed.head) :: encodeDirect(next)
+    }
 }
