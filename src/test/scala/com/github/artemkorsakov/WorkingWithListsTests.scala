@@ -214,34 +214,276 @@ class WorkingWithListsTests extends AnyFlatSpec {
     )
   }
 
-  "P14 (*)" should "" in {}
+  "P14 (*)" should "duplicate the elements of a list." in {
+    duplicate(List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("c"), Symbol("d"))) shouldBe List(
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("b"),
+      Symbol("b"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("d"),
+      Symbol("d")
+    )
+  }
 
-  "P15 (*)" should "" in {}
+  "P15 (*)" should "duplicate the elements of a list a given number of times." in {
+    duplicateN(3, List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("c"), Symbol("d"))) shouldBe List(
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("a"),
+      Symbol("b"),
+      Symbol("b"),
+      Symbol("b"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("c"),
+      Symbol("d"),
+      Symbol("d"),
+      Symbol("d")
+    )
+  }
 
-  "P16 (*)" should "" in {}
+  "P16 (*)" should "drop every Nth element from a list." in {
+    drop(
+      3,
+      List(
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("f"),
+        Symbol("g"),
+        Symbol("h"),
+        Symbol("i"),
+        Symbol("j"),
+        Symbol("k")
+      )
+    ) shouldBe List(
+      Symbol("a"),
+      Symbol("b"),
+      Symbol("d"),
+      Symbol("e"),
+      Symbol("g"),
+      Symbol("h"),
+      Symbol("j"),
+      Symbol("k")
+    )
+  }
 
-  "P17 (*)" should "" in {}
+  "P17 (*)" should "split a list into two parts." in {
+    split(
+      3,
+      List(
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("f"),
+        Symbol("g"),
+        Symbol("h"),
+        Symbol("i"),
+        Symbol("j"),
+        Symbol("k")
+      )
+    ) shouldBe (List(Symbol("a"), Symbol("b"), Symbol("c")), List(
+      Symbol("d"),
+      Symbol("e"),
+      Symbol("f"),
+      Symbol("g"),
+      Symbol("h"),
+      Symbol("i"),
+      Symbol("j"),
+      Symbol("k")
+    ))
+  }
 
-  "P18 (*)" should "" in {}
+  "P18 (*)" should "extract a slice from a list." in {
+    slice(
+      3,
+      7,
+      List(
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("f"),
+        Symbol("g"),
+        Symbol("h"),
+        Symbol("i"),
+        Symbol("j"),
+        Symbol("k")
+      )
+    ) shouldBe List(Symbol("d"), Symbol("e"), Symbol("f"), Symbol("g"))
+  }
 
-  "P19 (*)" should "" in {}
+  "P19 (*)" should "rotate a list N places to the left." in {
+    rotate(
+      3,
+      List(
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("f"),
+        Symbol("g"),
+        Symbol("h"),
+        Symbol("i"),
+        Symbol("j"),
+        Symbol("k")
+      )
+    ) shouldBe List(
+      Symbol("d"),
+      Symbol("e"),
+      Symbol("f"),
+      Symbol("g"),
+      Symbol("h"),
+      Symbol("i"),
+      Symbol("j"),
+      Symbol("k"),
+      Symbol("a"),
+      Symbol("b"),
+      Symbol("c")
+    )
+    rotate(
+      -2,
+      List(
+        Symbol("a"),
+        Symbol("b"),
+        Symbol("c"),
+        Symbol("d"),
+        Symbol("e"),
+        Symbol("f"),
+        Symbol("g"),
+        Symbol("h"),
+        Symbol("i"),
+        Symbol("j"),
+        Symbol("k")
+      )
+    ) shouldBe List(
+      Symbol("j"),
+      Symbol("k"),
+      Symbol("a"),
+      Symbol("b"),
+      Symbol("c"),
+      Symbol("d"),
+      Symbol("e"),
+      Symbol("f"),
+      Symbol("g"),
+      Symbol("h"),
+      Symbol("i")
+    )
+  }
 
-  "P20 (*)" should "" in {}
+  "P20 (*)" should "remove the Kth element from a list." in {
+    removeAt(1, List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("d"))) shouldBe (List(
+      Symbol("a"),
+      Symbol("c"),
+      Symbol("d")
+    ), Symbol("b"))
+  }
 
-  "P21 (*)" should "" in {}
+  "P21 (*)" should "insert an element at a given position into a list." in {
+    insertAt(Symbol("new"), 1, List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("d"))) shouldBe List(
+      Symbol("a"),
+      Symbol("new"),
+      Symbol("b"),
+      Symbol("c"),
+      Symbol("d")
+    )
+  }
 
-  "P22 (*)" should "" in {}
+  "P22 (*)" should "create a list containing all integers within a given range." in {
+    range(4, 9) shouldBe List(4, 5, 6, 7, 8, 9)
+  }
 
-  "P23 (*)" should "" in {}
+  "P23 (*)" should "extract a given number of randomly selected elements from a list." in {
+    val list       = List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("d"), Symbol("f"), Symbol("g"), Symbol("h"))
+    val randomList = randomSelect(3, list)
+    randomList.length shouldBe 3
+    randomList.forall(el => list.contains(el)) shouldBe true
+    println(randomList)
+  }
 
-  "P24 (*)" should "" in {}
+  "P24 (*)" should "Lotto: Draw N different random numbers from the set 1..M." in {
+    val randomList = lotto(6, 49)
+    randomList.length shouldBe 6
+    randomList.forall(el => 1 <= el && el <= 49) shouldBe true
+    println(randomList)
+  }
 
-  "P25 (*)" should "" in {}
+  "P25 (*)" should "Generate a random permutation of the elements of a list." in {
+    val list       = List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("d"), Symbol("e"), Symbol("f"))
+    val randomList = randomPermute(list)
+    randomList.length shouldBe 6
+    randomList.forall(el => list.contains(el)) shouldBe true
+    println(randomList)
+  }
 
-  "P26 (*)" should "" in {}
+  "P26 (*)" should "Generate the combinations of K distinct objects chosen from the N elements of a list." in {
+    val list            = List(Symbol("a"), Symbol("b"), Symbol("c"), Symbol("d"), Symbol("e"), Symbol("f"))
+    val allCombinations = combinations(3, list)
+    allCombinations.length shouldBe 20
+    allCombinations.forall(_.forall(list.contains(_))) shouldBe true
+    println(allCombinations)
+  }
 
-  "P27 (*)" should "" in {}
+  "P27 (*)" should "Group the elements of a set into disjoint subsets." in {
+    val list   = List("Aldo", "Beat", "Carla", "David", "Evi", "Flip", "Gary", "Hugo", "Ida")
+    val groups = group(List(2, 2, 5), list)
+    groups.length shouldBe 756
+    println(groups)
+  }
 
-  "P28 (*)" should "" in {}
+  "P28 (*)" should "Sorting a list of lists according to length of sublists." in {
+    lsort(
+      List(
+        List(Symbol("a"), Symbol("b"), Symbol("c")),
+        List(Symbol("d"), Symbol("e")),
+        List(Symbol("f"), Symbol("g"), Symbol("h")),
+        List(Symbol("d"), Symbol("e")),
+        List(Symbol("i"), Symbol("j"), Symbol("k"), Symbol("l")),
+        List(Symbol("m"), Symbol("n")),
+        List(Symbol("o"))
+      )
+    ) shouldBe List(
+      List(Symbol("o")),
+      List(Symbol("d"), Symbol("e")),
+      List(Symbol("d"), Symbol("e")),
+      List(Symbol("m"), Symbol("n")),
+      List(Symbol("a"), Symbol("b"), Symbol("c")),
+      List(Symbol("f"), Symbol("g"), Symbol("h")),
+      List(Symbol("i"), Symbol("j"), Symbol("k"), Symbol("l"))
+    )
+
+    lsortFreq(
+      List(
+        List(Symbol("a"), Symbol("b"), Symbol("c")),
+        List(Symbol("d"), Symbol("e")),
+        List(Symbol("f"), Symbol("g"), Symbol("h")),
+        List(Symbol("d"), Symbol("e")),
+        List(Symbol("i"), Symbol("j"), Symbol("k"), Symbol("l")),
+        List(Symbol("m"), Symbol("n")),
+        List(Symbol("o"))
+      )
+    ) shouldBe List(
+      List(Symbol("i"), Symbol("j"), Symbol("k"), Symbol("l")),
+      List(Symbol("o")),
+      List(Symbol("a"), Symbol("b"), Symbol("c")),
+      List(Symbol("f"), Symbol("g"), Symbol("h")),
+      List(Symbol("d"), Symbol("e")),
+      List(Symbol("d"), Symbol("e")),
+      List(Symbol("m"), Symbol("n"))
+    )
+  }
 
 }
