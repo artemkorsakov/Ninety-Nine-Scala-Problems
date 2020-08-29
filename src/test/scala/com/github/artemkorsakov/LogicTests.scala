@@ -87,8 +87,22 @@ class LogicTests extends AnyFlatSpec {
     false equ false shouldBe true
   }
 
-  "P49" should "Gray code." in {}
+  "P49" should "Gray code." in {
+    gray(1) shouldBe Set("0", "1")
+    gray(2) shouldBe Set("00", "01", "11", "10")
+    gray(3) shouldBe Set("000", "001", "011", "010", "110", "111", "101", "100")
+    gray(10).size shouldBe 1024
+  }
 
-  "P50" should "Huffman code." in {}
+  "P50" should "Huffman code." in {
+    huffman(Seq(("a", 45), ("b", 13), ("c", 12), ("d", 16), ("e", 9), ("f", 5))) shouldBe Set(
+      ("a", 0),
+      ("b", 101),
+      ("c", 100),
+      ("d", 111),
+      ("e", 1101),
+      ("f", 1100)
+    )
+  }
 
 }

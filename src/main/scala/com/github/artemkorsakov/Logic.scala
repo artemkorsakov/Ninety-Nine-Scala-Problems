@@ -49,4 +49,37 @@ object Logic {
     }
   }
 
+  def gray(c: Int): Set[String] =
+    if (c <= 0) {
+      Set.empty[String]
+    } else if (c == 1) {
+      Set("0", "1")
+    } else {
+      val set = gray(c - 1)
+      set.flatMap(str => Set("0" + str, "1" + str))
+    }
+
+  def huffman(seq: Seq[(String, Int)]): Set[(String, Int)] = {
+    var tree   = Seq.from(seq)
+    var result = seq.map(item => (item._1, "")).toSet
+
+    while (tree.length > 1) {
+      val min1 = tree.minBy(_._2)
+      val min2 = tree.filterNot(_._1 == min1._1).minBy(_._2)
+      val sum  = (min1._1 + min2._1, min1._2 + min2._2)
+      tree = tree.filterNot(item => item._1 == min1._1 || item._1 == min2._1) :+ sum
+      result = result.map { item =>
+        if (min1._1.contains(item._1)) {
+          (item._1, "0" + item._2)
+        } else if (min2._1.contains(item._1)) {
+          (item._1, "1" + item._2)
+        } else {
+          item
+        }
+      }
+    }
+
+    result.map(item => (item._1, item._2.toInt))
+  }
+
 }
