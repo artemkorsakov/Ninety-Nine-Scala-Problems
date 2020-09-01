@@ -3,6 +3,7 @@ package com.github.artemkorsakov
 object BinaryTrees {
   sealed abstract class Tree[+T] {
     def length: Int
+    def height: Int
     def isMirrorOf[V](tree: Tree[V]): Boolean
     def isSymmetric: Boolean
     def addValue[U >: T <% Ordered[U]](x: U): Tree[U]
@@ -10,14 +11,16 @@ object BinaryTrees {
 
   case object End extends Tree[Nothing] {
     override def length: Int                                         = 0
+    override def height: Int                                         = 0
     override def isMirrorOf[V](tree: Tree[V]): Boolean               = tree == End
     override def isSymmetric: Boolean                                = true
     override def addValue[U >: Nothing <% Ordered[U]](x: U): Tree[U] = Node(x)
-    override def toString                                            = " "
+    override def toString                                            = "."
   }
 
   case class Node[+T](value: T, left: Tree[T], right: Tree[T]) extends Tree[T] {
     override def length: Int = 1 + left.length + right.length
+    override def height: Int = 1 + math.max(left.height, right.height)
 
     def isMirrorOf[V](tree: Tree[V]): Boolean = tree match {
       case t: Node[V] => left.isMirrorOf(t.right) && right.isMirrorOf(t.left)
@@ -73,6 +76,28 @@ object BinaryTrees {
           a <- treeS
           b <- treeB
         } yield Node(default, a, b) :: Node(default, b, a) :: Nil).flatten
+      }
+
+    /**
+      * In a height-balanced binary tree, the following property holds for every node: The height of its left subtree and the height of its right subtree are almost equal, which means their difference is not greater than one.
+      */
+    def hbalTrees[T](height: Int, default: T): Set[Tree[T]] =
+      if (height <= 0) {
+        Set(End)
+      } else if (height == 1) {
+        Set(Node(default))
+      } else {
+        val treesLessThanTwo = hbalTrees(height - 2, default)
+        val treesLessThanOne = hbalTrees(height - 1, default)
+        val trees1 = (for {
+          tr2 <- treesLessThanTwo
+          tr1 <- treesLessThanOne
+        } yield Set(Node(default, tr2, tr1), Node(default, tr1, tr2))).flatten
+        val trees2 = for {
+          tr11 <- treesLessThanOne
+          tr12 <- treesLessThanOne
+        } yield Node(default, tr11, tr12)
+        (trees1 ++ trees2).toSet
       }
 
     def symmetricBalancedTrees[T](length: Int, default: T): Set[Tree[T]] =

@@ -59,7 +59,14 @@ class BinaryTreesTests extends AnyFlatSpec {
     list.foreach(tree => println(tree))
   }
 
-  "P59" should "" in {}
+  "P59" should "Construct height-balanced binary trees." in {
+    (0 to 4).foreach { i =>
+      println(s"Trees $i:")
+      val list = Tree.hbalTrees(i, "x")
+      list.size shouldBe Array(1, 1, 3, 15, 315)(i)
+      list.foreach(tree => println(s"Tree:\n$tree\n"))
+    }
+  }
 
   "P60" should "" in {}
 
