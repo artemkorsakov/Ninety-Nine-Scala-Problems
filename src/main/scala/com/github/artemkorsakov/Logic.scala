@@ -49,6 +49,18 @@ object Logic {
     }
   }
 
+  /**
+    * Gray code.
+    * An n-bit Gray code is a sequence of n-bit strings constructed according to certain rules. For example,
+    * n = 1: C(1) = ("0", "1").
+    * n = 2: C(2) = ("00", "01", "11", "10").
+    * n = 3: C(3) = ("000", "001", "011", "010", "110", "111", "101", "100").
+    * Find out the construction rules and write a function to generate Gray codes.
+    *
+    * scala> gray(3)
+    * res0 List[String] = List(000, 001, 011, 010, 110, 111, 101, 100)
+    * See if you can use memoization to make the function more efficient.
+    */
   def gray(c: Int): Set[String] =
     if (c <= 0) {
       Set.empty[String]
@@ -59,6 +71,14 @@ object Logic {
       set.flatMap(str => Set("0" + str, "1" + str))
     }
 
+  /**
+    * Huffman code.
+    * First of all, consult a good book on discrete mathematics or algorithms for a detailed description of Huffman codes!
+    * We suppose a set of symbols with their frequencies, given as a list of (S, F) Tuples. E.g. (("a", 45), ("b", 13), ("c", 12), ("d", 16), ("e", 9), ("f", 5)). Our objective is to construct a list of (S, C) Tuples, where C is the Huffman code word for the symbol S.
+    *
+    * scala> huffman(List(("a", 45), ("b", 13), ("c", 12), ("d", 16), ("e", 9), ("f", 5)))
+    * res0: List[String, String] = List((a,0), (b,101), (c,100), (d,111), (e,1101), (f,1100))
+    */
   def huffman(seq: Seq[(String, Int)]): Set[(String, Int)] = {
     var tree   = Seq.from(seq)
     var result = seq.map(item => (item._1, "")).toSet
