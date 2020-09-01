@@ -13,19 +13,19 @@ class BinaryTreesTests extends AnyFlatSpec {
     println("Tree:\n" + Node('b', Node('d'), Node('e')).toString)
     val tree = Node('a', Node('b', Node('d'), Node('e')), Node('c', End, Node('f', Node('g'), End)))
     println("Tree:\n" + tree.toString)
-    tree.length shouldBe 7
+    tree.nodeCount shouldBe 7
   }
 
   "P55" should "Construct completely balanced binary trees." in {
     val list3 = Tree.cBalanced(3, "x")
     list3.foreach(tree => println(tree + "\n__________\n"))
-    list3.forall(tree => tree.length == 3) shouldBe true
+    list3.forall(tree => tree.nodeCount == 3) shouldBe true
     val list4 = Tree.cBalanced(4, "x")
     list4.foreach(tree => println(tree + "\n__________\n"))
-    list4.forall(tree => tree.length == 4) shouldBe true
+    list4.forall(tree => tree.nodeCount == 4) shouldBe true
     val list5 = Tree.cBalanced(5, "x")
     list5.foreach(tree => println(tree + "\n__________\n"))
-    list5.forall(tree => tree.length == 5) shouldBe true
+    list5.forall(tree => tree.nodeCount == 5) shouldBe true
   }
 
   "P56" should "Symmetric binary trees." in {
@@ -68,7 +68,53 @@ class BinaryTreesTests extends AnyFlatSpec {
     }
   }
 
-  "P60" should "" in {}
+  "P60" should "Construct height-balanced binary trees with a given number of nodes." in {
+    minHbalNodes(1) shouldBe 1
+    maxHbalNodes(1) shouldBe 1
+
+    minHbalNodes(2) shouldBe 2
+    maxHbalNodes(2) shouldBe 3
+
+    minHbalNodes(3) shouldBe 4
+    maxHbalNodes(3) shouldBe 7
+
+    minHbalNodes(4) shouldBe 7
+    maxHbalNodes(4) shouldBe 15
+
+    minHbalHeight(1) shouldBe 1
+    maxHbalHeight(1) shouldBe 1
+
+    minHbalHeight(2) shouldBe 2
+    maxHbalHeight(2) shouldBe 2
+
+    minHbalHeight(3) shouldBe 2
+    maxHbalHeight(3) shouldBe 2
+
+    minHbalHeight(4) shouldBe 3
+    maxHbalHeight(4) shouldBe 3
+
+    minHbalHeight(5) shouldBe 3
+    maxHbalHeight(5) shouldBe 3
+
+    minHbalHeight(6) shouldBe 3
+    maxHbalHeight(6) shouldBe 3
+
+    minHbalHeight(7) shouldBe 3
+    maxHbalHeight(7) shouldBe 4
+  }
+
+  "P60" should "Construct height-balanced binary trees with a given number of nodes. Part2" in {
+    val list4 = Tree.hbalTreesWithNodes(4, "x")
+    list4.foreach(tree => println(s"Tree:\n$tree\n"))
+    list4.length shouldBe 4
+
+    val list5 = Tree.hbalTreesWithNodes(5, "x")
+    list5.foreach(tree => println(s"Tree:\n$tree\n"))
+    list5.length shouldBe 6
+
+    val list15 = Tree.hbalTreesWithNodes(15, "x")
+    list15.length shouldBe 1553
+  }
 
   "P61" should "" in {}
 

@@ -31,7 +31,7 @@ package com.github.artemkorsakov
   */
 object BinaryTrees {
   sealed abstract class Tree[+T] {
-    def length: Int
+    def nodeCount: Int
     def height: Int
     def isMirrorOf[V](tree: Tree[V]): Boolean
 
@@ -52,7 +52,7 @@ object BinaryTrees {
   }
 
   case object End extends Tree[Nothing] {
-    override def length: Int                                         = 0
+    override def nodeCount: Int                                      = 0
     override def height: Int                                         = 0
     override def isMirrorOf[V](tree: Tree[V]): Boolean               = tree == End
     override def isSymmetric: Boolean                                = true
@@ -61,8 +61,8 @@ object BinaryTrees {
   }
 
   case class Node[+T](value: T, left: Tree[T], right: Tree[T]) extends Tree[T] {
-    override def length: Int = 1 + left.length + right.length
-    override def height: Int = 1 + math.max(left.height, right.height)
+    override def nodeCount: Int = 1 + left.nodeCount + right.nodeCount
+    override def height: Int    = 1 + math.max(left.height, right.height)
 
     def isMirrorOf[V](tree: Tree[V]): Boolean = tree match {
       case t: Node[V] => left.isMirrorOf(t.right) && right.isMirrorOf(t.left)
@@ -129,6 +129,15 @@ object BinaryTrees {
         } yield Node(default, a, b) :: Node(default, b, a) :: Nil).flatten
       }
 
+    /**
+      * Generate-and-test paradigm.
+      * Apply the generate-and-test paradigm to construct all symmetric, completely balanced binary trees with a given number of nodes.
+      * scala> Tree.symmetricBalancedTrees(5, "x")
+      * res0: List[Node[String]] = List(T(x T(x . T(x . .)) T(x T(x . .) .)), T(x T(x T(x . .) .) T(x . T(x . .))))
+      */
+    def symmetricBalancedTrees[T](length: Int, default: T): Set[Tree[T]] =
+      cBalanced(length, default).filter(_.isSymmetric)
+
     /** Construct height-balanced binary trees.
       * In a height-balanced binary tree, the following property holds for every node:
       * The height of its left subtree and the height of its right subtree are almost equal,
@@ -145,13 +154,29 @@ object BinaryTrees {
     }
 
     /**
-      * Generate-and-test paradigm.
-      * Apply the generate-and-test paradigm to construct all symmetric, completely balanced binary trees with a given number of nodes.
-      * scala> Tree.symmetricBalancedTrees(5, "x")
-      * res0: List[Node[String]] = List(T(x T(x . T(x . .)) T(x T(x . .) .)), T(x T(x T(x . .) .) T(x . T(x . .))))
+      * Construct height-balanced binary trees with a given number of nodes.
+      * Consider a height-balanced binary tree of height H.
+      * What is the maximum number of nodes it can contain? Clearly, MaxN = 2H - 1.
+      * However, what is the minimum number MinN?
       */
-    def symmetricBalancedTrees[T](length: Int, default: T): Set[Tree[T]] =
-      cBalanced(length, default).filter(_.isSymmetric)
+    def minHbalNodes(height: Int): Int = height match {
+      case n if n < 1 => 0
+      case 1          => 1
+      case _          => 1 + minHbalNodes(height - 1) + minHbalNodes(height - 2)
+    }
+    def maxHbalNodes(height: Int): Int = math.pow(2, height).toInt - 1
+
+    /**
+      * On the other hand, we might ask: what is the maximum height H a height-balanced binary tree with N nodes can have?
+      */
+    def minHbalHeight(nodes: Int): Int =
+      if (nodes == 0) 0
+      else minHbalHeight(nodes / 2) + 1
+    def maxHbalHeight(nodes: Int): Int =
+      LazyList.from(1).takeWhile(minHbalNodes(_) <= nodes).last
+
+    def hbalTreesWithNodes[T](nodes: Int, value: T): List[Tree[T]] =
+      (minHbalHeight(nodes) to maxHbalHeight(nodes)).flatMap(hbalTrees(_, value)).filter(_.nodeCount == nodes).toList
 
     def mirror[T](tree: Tree[T]): Tree[T] = tree match {
       case End                      => End
