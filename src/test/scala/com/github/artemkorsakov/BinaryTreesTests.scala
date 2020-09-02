@@ -151,9 +151,19 @@ class BinaryTreesTests extends AnyFlatSpec {
     Node('a', Node('b', End, Node('c')), Node('d')).layoutBinaryTree2.toString shouldBe "T[3,1](a T[1,2](b . T[2,3](c . .)) T[5,2](d . .))"
   }
 
-  "P66" should "Layout a binary tree (3)." in {}
+  "P66" should "Layout a binary tree (3)." in {
+    Node('a', Node('b', End, Node('c')), Node('d')).layoutBinaryTree3.toString shouldBe "T[2,1](a T[1,2](b . T[2,3](c . .)) T[3,2](d . .))"
+  }
 
-  "P67" should "A string representation of binary trees." in {}
+  "P67" should "A string representation of binary trees." in {
+    Node('a', Node('b', Node('d'), Node('e')), Node('c', End, Node('f', Node('g'), End))).toStringPres shouldBe "a(b(d,e),c(,f(g,)))"
+
+    Tree.fromString("a(b(d,e),c(,f(g,)))") shouldBe Node(
+      'a',
+      Node('b', Node('d'), Node('e')),
+      Node('c', End, Node('f', Node('g'), End))
+    )
+  }
 
   "P68" should "Preorder and inorder sequences of binary trees." in {}
 
