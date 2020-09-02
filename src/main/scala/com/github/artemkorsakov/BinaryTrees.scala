@@ -33,6 +33,24 @@ object BinaryTrees {
   sealed abstract class Tree[+T] {
     def nodeCount: Int
     def height: Int
+
+    /** A leaf is a node with no successors. Write a method leafCount to count them.
+      */
+    def leafCount: Int
+
+    /** A leaf is a node with no successors. Write a method leafList to collect them in a list.
+      */
+    def leafList: List[T]
+
+    /** An internal node of a binary tree has either one or two non-empty successors. Write a method internalList to collect them in a list.
+      */
+    def internalList: List[T]
+
+    /** Collect the nodes at a given level in a list.
+      * A node of a binary tree is at level N if the path from the root to the node has length N-1.
+      * The root node is at level 1. Write a method atLevel to collect all nodes at a given level in a list.
+      */
+    def atLevel(level: Int): List[T]
     def isMirrorOf[V](tree: Tree[V]): Boolean
 
     /**
@@ -49,20 +67,68 @@ object BinaryTrees {
       * Hint: The abstract definition of addValue in Tree should be def addValue[U >: T <% Ordered[U]](x: U): Tree[U]. The >: T is because addValue's parameters need to be contravariant in T. (Conceptually, we're adding nodes above existing nodes. In order for the subnodes to be of type T or any subtype, the upper nodes must be of type T or any supertype.) The <% Ordered[U] allows us to use the < operator on the values in the tree.
       */
     def addValue[U >: T <% Ordered[U]](x: U): Tree[U]
+
+    /** As a preparation for drawing a tree, a layout algorithm is required to determine the position of each node in a rectangular grid.
+      * Several layout methods are conceivable, one of them is shown in the illustration on the right.
+      * In this layout strategy, the position of a node v is obtained by the following two rules:
+      * x(v) is equal to the position of the node v in the inorder sequence
+      * y(v) is equal to the depth of the node v in the tree
+      * In order to store the position of the nodes, we add a new class with the additional information.
+      */
+    def layoutBinaryTree: Tree[T] = layoutBinaryTreeInternal(1, 1)._1
+    def layoutBinaryTreeInternal(x: Int, depth: Int): (Tree[T], Int)
+
+    def treeDepth: Int
+    def leftmostNodeDepth: Int
+
+    /** An alternative layout method is depicted in the illustration opposite.
+      * Find out the rules and write the corresponding method. Hint: On a given level, the horizontal distance between neighboring nodes is constant.
+      */
+    def layoutBinaryTree2: Tree[T] = {
+      val d  = treeDepth
+      val x0 = (2 to leftmostNodeDepth).map(n => Math.pow(2, d - n).toInt).sum + 1
+      layoutBinaryTree2Internal(x0, 1, d - 2)
+    }
+    def layoutBinaryTree2Internal(x: Int, depth: Int, exp: Int): Tree[T]
   }
 
   case object End extends Tree[Nothing] {
-    override def nodeCount: Int                                      = 0
-    override def height: Int                                         = 0
-    override def isMirrorOf[V](tree: Tree[V]): Boolean               = tree == End
-    override def isSymmetric: Boolean                                = true
-    override def addValue[U >: Nothing <% Ordered[U]](x: U): Tree[U] = Node(x)
-    override def toString                                            = "."
+    override def nodeCount: Int                                                = 0
+    override def height: Int                                                   = 0
+    override def leafCount: Int                                                = 0
+    override def leafList: List[Nothing]                                       = Nil
+    override def internalList: List[Nothing]                                   = Nil
+    override def atLevel(level: Int): List[Nothing]                            = Nil
+    override def isMirrorOf[V](tree: Tree[V]): Boolean                         = tree == End
+    override def isSymmetric: Boolean                                          = true
+    override def addValue[U >: Nothing <% Ordered[U]](x: U): Tree[U]           = Node(x)
+    override def toString                                                      = "."
+    def layoutBinaryTreeInternal(x: Int, depth: Int): (Tree[Nothing], Int)     = (End, x)
+    def treeDepth: Int                                                         = 0
+    def leftmostNodeDepth: Int                                                 = 0
+    def layoutBinaryTree2Internal(x: Int, depth: Int, exp: Int): Tree[Nothing] = End
   }
 
   case class Node[+T](value: T, left: Tree[T], right: Tree[T]) extends Tree[T] {
     override def nodeCount: Int = 1 + left.nodeCount + right.nodeCount
     override def height: Int    = 1 + math.max(left.height, right.height)
+    override def leafCount: Int = (left, right) match {
+      case (End, End) => 1
+      case _          => left.leafCount + right.leafCount
+    }
+    override def leafList: List[T] = (left, right) match {
+      case (End, End) => List(value)
+      case _          => left.leafList ::: right.leafList
+    }
+    override def internalList: List[T] = (left, right) match {
+      case (End, End) => Nil
+      case _          => value :: left.internalList ::: right.internalList
+    }
+    override def atLevel(level: Int): List[T] = level match {
+      case n if n < 1 => Nil
+      case 1          => List(value)
+      case l          => left.atLevel(l - 1) ::: right.atLevel(l - 1)
+    }
 
     def isMirrorOf[V](tree: Tree[V]): Boolean = tree match {
       case t: Node[V] => left.isMirrorOf(t.right) && right.isMirrorOf(t.left)
@@ -98,10 +164,51 @@ object BinaryTrees {
         }
         (Array(firstRow) ++ Array(secondRow) ++ lastRows).mkString("\n")
       }
+
+    def layoutBinaryTreeInternal(x: Int, depth: Int): (Tree[T], Int) = {
+      val (leftTree, myX)    = left.layoutBinaryTreeInternal(x, depth + 1)
+      val (rightTree, nextX) = right.layoutBinaryTreeInternal(myX + 1, depth + 1)
+      (PositionedNode(value, leftTree, rightTree, myX, depth), nextX)
+    }
+    def treeDepth: Int         = (left.treeDepth max right.treeDepth) + 1
+    def leftmostNodeDepth: Int = left.leftmostNodeDepth + 1
+    def layoutBinaryTree2Internal(x: Int, depth: Int, exp: Int): Tree[T] =
+      PositionedNode(
+        value,
+        left.layoutBinaryTree2Internal(x - math.pow(2, exp).toInt, depth + 1, exp - 1),
+        right.layoutBinaryTree2Internal(x + math.pow(2, exp).toInt, depth + 1, exp - 1),
+        x,
+        depth
+      )
   }
 
   object Node {
     def apply[T](value: T): Node[T] = Node(value, End, End)
+  }
+
+  case class PositionedNode[+T](
+      value: T,
+      left: Tree[T],
+      right: Tree[T],
+      x: Int,
+      y: Int
+  ) extends Tree[T] {
+    private val node                                                          = Node(value, left, right)
+    override def nodeCount: Int                                               = node.nodeCount
+    override def height: Int                                                  = node.height
+    override def leafCount: Int                                               = node.leafCount
+    override def leafList: List[T]                                            = node.leafList
+    override def internalList: List[T]                                        = node.internalList
+    override def atLevel(level: Int): List[T]                                 = node.atLevel(level)
+    override def isMirrorOf[V](tree: Tree[V]): Boolean                        = node.isMirrorOf(tree)
+    override def isSymmetric: Boolean                                         = node.isSymmetric
+    override def addValue[U >: T <% Ordered[U]](x: U): Tree[U]                = node.addValue(x)
+    override def layoutBinaryTreeInternal(x: Int, depth: Int): (Tree[T], Int) = node.layoutBinaryTreeInternal(x, depth)
+    def treeDepth: Int                                                        = node.treeDepth
+    def leftmostNodeDepth: Int                                                = node.leftmostNodeDepth
+    def layoutBinaryTree2Internal(x: Int, depth: Int, exp: Int): Tree[T]      = node.layoutBinaryTree2Internal(x, depth, exp)
+    override def toString: String =
+      "T[" + x.toString + "," + y.toString + "](" + value.toString + " " + left.toString + " " + right.toString + ")"
   }
 
   object Tree {
@@ -185,5 +292,25 @@ object BinaryTrees {
 
     def fromList[T <% Ordered[T]](list: List[T]): Tree[T] =
       list.foldLeft(End: Tree[T])((r, e) => r.addValue(e))
+
+    /** Construct a complete binary tree.
+      * A complete binary tree with height H is defined as follows: The levels 1,2,3,...,H-1 contain the maximum number
+      * of nodes (i.e 2(i-1) at the level i, note that we start counting the levels from 1 at the root).
+      * In level H, which may contain less than the maximum possible number of nodes, all the nodes are "left-adjusted".
+      * This means that in a levelorder tree traversal all internal nodes come first, the leaves come second,
+      * and empty successors (the Ends which are not really nodes!) come last.
+      * Particularly, complete binary trees are used as data structures (or addressing schemes) for heaps.
+      * We can assign an address number to each node in a complete binary tree by enumerating the nodes in levelorder,
+      * starting at the root with number 1. In doing so, we realize that for every node X with address A
+      * the following property holds: The address of X's left and right successors are 2*A and 2*A+1, respectively,
+      * supposed the successors do exist. This fact can be used to elegantly construct a complete binary tree structure.
+      * Write a method completeBinaryTree that takes as parameters the number of nodes and the value to put in each node.
+      */
+    def completeBinaryTree[T](nodes: Int, value: T): Tree[T] = {
+      def generateTree(addr: Int): Tree[T] =
+        if (addr > nodes) End
+        else Node(value, generateTree(2 * addr), generateTree(2 * addr + 1))
+      generateTree(1)
+    }
   }
 }

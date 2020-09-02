@@ -116,26 +116,47 @@ class BinaryTreesTests extends AnyFlatSpec {
     list15.length shouldBe 1553
   }
 
-  "P61" should "" in {}
+  "P61" should "Count the leaves of a binary tree." in {
+    Node('x', Node('x'), End).leafCount shouldBe 1
+  }
 
-  "P61A" should "" in {}
+  "P61A" should "Collect the leaves of a binary tree in a list." in {
+    Node('a', Node('b'), Node('c', Node('d'), Node('e'))).leafList shouldBe List('b', 'd', 'e')
+  }
 
-  "P62" should "" in {}
+  "P62" should "Collect the internal nodes of a binary tree in a list." in {
+    Node('a', Node('b'), Node('c', Node('d'), Node('e'))).internalList shouldBe List('a', 'c')
+  }
 
-  "P62B" should "" in {}
+  "P62B" should "Collect the nodes at a given level in a list." in {
+    Node('a', Node('b'), Node('c', Node('d'), Node('e'))).atLevel(1) shouldBe List('a')
+    Node('a', Node('b'), Node('c', Node('d'), Node('e'))).atLevel(2) shouldBe List('b', 'c')
+    Node('a', Node('b'), Node('c', Node('d'), Node('e'))).atLevel(3) shouldBe List('d', 'e')
+  }
 
-  "P63" should "" in {}
+  "P63" should "Construct a complete binary tree." in {
+    val tree = Tree.completeBinaryTree(6, "x")
+    println(tree)
+  }
 
-  "P64" should "" in {}
+  "P64" should "Layout a binary tree (1)." in {
+    val posnode = Node('a', Node('b', End, Node('c')), Node('d')).layoutBinaryTree
+    posnode.toString shouldBe "T[3,1](a T[1,2](b . T[2,3](c . .)) T[4,2](d . .))"
 
-  "P65" should "" in {}
+    val tree = Tree.fromList(List('n', 'k', 'm', 'c', 'a', 'h', 'g', 'e', 'u', 'p', 's', 'q'))
+    tree.layoutBinaryTree.toString shouldBe "T[8,1](n T[6,2](k T[2,3](c T[1,4](a . .) T[5,4](h T[4,5](g T[3,6](e . .) .) .)) T[7,3](m . .)) T[12,2](u T[9,3](p . T[11,4](s T[10,5](q . .) .)) .))"
+  }
 
-  "P66" should "" in {}
+  "P65" should "Layout a binary tree (2)." in {
+    Node('a', Node('b', End, Node('c')), Node('d')).layoutBinaryTree2.toString shouldBe "T[3,1](a T[1,2](b . T[2,3](c . .)) T[5,2](d . .))"
+  }
 
-  "P67" should "" in {}
+  "P66" should "Layout a binary tree (3)." in {}
 
-  "P68" should "" in {}
+  "P67" should "A string representation of binary trees." in {}
 
-  "P69" should "" in {}
+  "P68" should "Preorder and inorder sequences of binary trees." in {}
+
+  "P69" should "Dotstring representation of binary trees." in {}
 
 }
