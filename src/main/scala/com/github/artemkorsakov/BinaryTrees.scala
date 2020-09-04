@@ -95,6 +95,10 @@ object BinaryTrees {
     def layoutBinaryTree3: Tree[T] = layoutBinaryTree3Internal(bounds.map(_._1).min * -1 + 1, 1)
     def layoutBinaryTree3Internal(x: Int, depth: Int): Tree[T]
 
+    def preorder: List[T]
+    def inorder: List[T]
+    def toDotstring: String
+
     def toStringPres: String
   }
 
@@ -115,6 +119,9 @@ object BinaryTrees {
     def layoutBinaryTree2Internal(x: Int, depth: Int, exp: Int): Tree[Nothing] = End
     def bounds: List[(Int, Int)]                                               = Nil
     def layoutBinaryTree3Internal(x: Int, depth: Int): Tree[Nothing]           = End
+    def preorder: List[Nothing]                                                = Nil
+    def inorder: List[Nothing]                                                 = Nil
+    def toDotstring: String                                                    = "."
     override def toStringPres: String                                          = ""
   }
 
@@ -220,6 +227,9 @@ object BinaryTrees {
       case (End, End) => value.toString
       case _          => s"$value(${left.toStringPres},${right.toStringPres})"
     }
+    def preorder: List[T]   = value :: left.preorder ::: right.preorder
+    def inorder: List[T]    = left.inorder ::: value :: right.inorder
+    def toDotstring: String = value.toString + left.toDotstring + right.toDotstring
   }
 
   object Node {
@@ -252,6 +262,9 @@ object BinaryTrees {
     override def bounds: List[(Int, Int)]                               = node.bounds
     override def layoutBinaryTree3Internal(x: Int, depth: Int): Tree[T] = node.layoutBinaryTree3Internal(x, depth)
     override def toStringPres: String                                   = node.toStringPres
+    override def preorder: List[T]                                      = node.preorder
+    override def inorder: List[T]                                       = node.inorder
+    override def toDotstring: String                                    = node.toDotstring
   }
 
   object Tree {
@@ -377,6 +390,24 @@ object BinaryTrees {
         if (addr > nodes) End
         else Node(value, generateTree(2 * addr), generateTree(2 * addr + 1))
       generateTree(1)
+    }
+
+    def preInTree[T](pre: List[T], in: List[T]): Tree[T] = pre match {
+      case Nil => End
+      case v :: preTail =>
+        val (leftIn, rightIn) = in.span(_ != v)
+        Node(v, preInTree(preTail.take(leftIn.length), leftIn), preInTree(preTail.drop(leftIn.length), rightIn))
+    }
+
+    def fromDotstring(ds: String): Tree[Char] = {
+      def fromDotstringR(pos: Int): (Tree[Char], Int) = ds(pos) match {
+        case '.' => (End, pos + 1)
+        case c =>
+          val (lTree, lPos) = fromDotstringR(pos + 1)
+          val (rTree, rPos) = fromDotstringR(lPos)
+          (Node(c, lTree, rTree), rPos)
+      }
+      fromDotstringR(0)._1
     }
   }
 }

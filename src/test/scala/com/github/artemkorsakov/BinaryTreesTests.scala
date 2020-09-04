@@ -165,8 +165,23 @@ class BinaryTreesTests extends AnyFlatSpec {
     )
   }
 
-  "P68" should "Preorder and inorder sequences of binary trees." in {}
+  "P68" should "Preorder and inorder sequences of binary trees." in {
+    Tree.fromString("a(b(d,e),c(,f(g,)))").preorder shouldBe List('a', 'b', 'd', 'e', 'c', 'f', 'g')
 
-  "P69" should "Dotstring representation of binary trees." in {}
+    Tree.fromString("a(b(d,e),c(,f(g,)))").inorder shouldBe List('d', 'b', 'e', 'a', 'c', 'g', 'f')
+
+    val tree = Tree.preInTree(List('a', 'b', 'd', 'e', 'c', 'f', 'g'), List('d', 'b', 'e', 'a', 'c', 'g', 'f'))
+    tree shouldBe Node('a', Node('b', Node('d'), Node('e')), Node('c', Node('f'), Node('g')))
+  }
+
+  "P69" should "Dotstring representation of binary trees." in {
+    Tree.fromString("a(b(d,e),c(,f(g,)))").toDotstring shouldBe "abd..e..c.fg..."
+
+    Tree.fromDotstring("abd..e..c.fg...") shouldBe Node(
+      'a',
+      Node('b', Node('d'), Node('e')),
+      Node('c', End, Node('f', Node('g'), End))
+    )
+  }
 
 }
